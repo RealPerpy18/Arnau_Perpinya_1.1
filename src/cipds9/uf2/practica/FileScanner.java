@@ -8,23 +8,37 @@ import java.util.concurrent.ForkJoinPool;
 
 public class FileScanner {
 
-    private static int FILE_MAX_SIZE=100000;
+    private static int FILE_MAX_SIZE=50000000;
 
 
     public static void main(String[] args) {
-      //  int cores = Runtime.getRuntime().availableProcessors();
+      //
 
         int llarg=readFile(args[0]).length;
         if(llarg<=FILE_MAX_SIZE) {
-
             ForkJoinPool pool = new ForkJoinPool();
+            long t1=System.currentTimeMillis();
             ArrayByteSearcher abs = new ArrayByteSearcher(readFile(args[0]), readFile(args[1]), 0, llarg);
             pool.invoke(abs);
+            long t2=System.currentTimeMillis();
             if (abs.getArray().length > 0) {
+
                 Arrays.sort(abs.getArray());
                 System.out.println(Arrays.toString(abs.getArray()));
+                System.out.println(abs.getArray().length);
+                if(args.length==3) {
+                    System.out.print("Temps d'execució: ");
+                    System.out.println((((t2 - t1)/1000)+","+(t2 - t1)%1000)+" Segons");
+                }
             } else {
+                if(args.length==3) {
+                    System.out.print("Temps d'execució: ");
+                    System.out.println((((t2 - t1)/1000)+","+(t2 - t1)%1000)+" Segons");
+                }
                 System.out.println(0);
+                System.out.println(abs.getArray().length);
+
+
             }
         }
         else{
