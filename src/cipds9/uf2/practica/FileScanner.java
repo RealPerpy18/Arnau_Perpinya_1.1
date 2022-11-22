@@ -4,20 +4,34 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.concurrent.ForkJoinPool;
 
 public class FileScanner {
 
     private static int FILE_MAX_SIZE=100000;
-    private static String pathfile="C:\\apunts.txt";
-    private static String pathtarget="C:\\target.bin";
+
 
     public static void main(String[] args) {
       //  int cores = Runtime.getRuntime().availableProcessors();
 
-        ArrayByteSearcher abs=new ArrayByteSearcher(readFile(pathfile),readFile(pathtarget));
-        System.out.println(Arrays.toString(abs.calculosComplejos()));
+        int llarg=readFile(args[0]).length;
+        if(llarg<=FILE_MAX_SIZE) {
 
-    }
+            ForkJoinPool pool = new ForkJoinPool();
+            ArrayByteSearcher abs = new ArrayByteSearcher(readFile(args[0]), readFile(args[1]), 0, llarg);
+            pool.invoke(abs);
+            if (abs.getArray().length > 0) {
+                Arrays.sort(abs.getArray());
+                System.out.println(Arrays.toString(abs.getArray()));
+            } else {
+                System.out.println(0);
+            }
+        }
+        else{
+            System.out.println("El fitxer es massa granm");
+        }
+
+        }
     private static byte[] readFile(String path){
         File file = new File(path);
         try {
