@@ -4,21 +4,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
 
 import static java.util.Arrays.copyOfRange;
 
-public class ArrayByteSearcher extends RecursiveTask {
+public class ArrayByteSearcher extends RecursiveAction {
 
 private static final int THRESHOLD=25;
+public static long[] arrayfinal = new long[0];
     byte[]Fitxer;
     byte[]Target;
 
-    public ArrayByteSearcher(byte[] fitxer, byte[] target) {
-        Fitxer = fitxer;
-        Target = target;
+    int ini;
+
+    int fi;
+    public ArrayByteSearcher(byte[] fitxer, byte[] target,int ini,int fi) {
+        this.Fitxer = fitxer;
+        this.Target = target;
+        this.ini =ini;
+        this.fi =fi;
+
+    }
+    public long[] getArray(){
+        return arrayfinal;
     }
 
     public long[] addArr(long[]a, long b){
@@ -33,58 +44,27 @@ private static final int THRESHOLD=25;
     }
 
     @Override
-    protected long[] compute() {
-
-        if (Fitxer.length<THRESHOLD){
-           return task();
-        }
-
-         else{
-
-            List<ArrayByteSearcher> subtasks =
-                    new ArrayList<ArrayByteSearcher>();
-            subtasks.addAll(createSubtasks());
-
-            for(ArrayByteSearcher subtask : subtasks){
-                subtask.fork();
-            }
-            for(ArrayByteSearcher subtask : subtasks) {
-               subtask.join();
-            }
-
-            return task();
-        }
-
-
-    }
-
-
-    private List<ArrayByteSearcher> createSubtasks() {
-        List<ArrayByteSearcher> subtasks =
-                new ArrayList<ArrayByteSearcher>();
-
-        ArrayByteSearcher subtask1 = new ArrayByteSearcher(copyOfRange(Fitxer,0,Fitxer.length/2),Target);
-        ArrayByteSearcher subtask2 = new ArrayByteSearcher(copyOfRange(Fitxer,Fitxer.length/2,Fitxer.length),Target);
-
-        subtasks.add(subtask1);
-        subtasks.add(subtask2);
-
-        return subtasks;
-    }
-    private long[] task(){
-        byte[]auxFitxer = new byte[0];
-        long[]ret=new long[0];
-        for(int i=0;i<Fitxer.length;i++) {
-            if(Fitxer[i]==Target[0]) {
-                auxFitxer=copyOfRange(Fitxer,  i,  i+Target.length);
-                if(Arrays.equals(auxFitxer,Target)){
-                    ret= addArr(ret,i+1);
-                    i=i+(Target.length-1);
+    protected void compute() {
+        if ((fi-ini)<THRESHOLD){
+            byte[]auxFitxer ;
+            for(int i=this.ini;i<this.fi;i++) {
+                if(Fitxer[i]==Target[0]) {
+                    auxFitxer=copyOfRange(Fitxer,  i,  i+Target.length);
+                    if(Arrays.equals(auxFitxer,Target)){
+                        arrayfinal= addArr(arrayfinal,i+1);
+                        i=i+(Target.length-1);
+                    }
                 }
             }
         }
-        return ret;
-    }
+         else{
+            int mid=(ini+fi+Target.length)/2;
+            ArrayByteSearcher a1=new ArrayByteSearcher(Fitxer,Target,ini,mid);
+            ArrayByteSearcher a2=new ArrayByteSearcher(Fitxer,Target,mid+1,fi);
+            invokeAll(a1,a2);
+        }
+   }
+
 
 }
 
