@@ -3,7 +3,9 @@ package cipds9.uf2.practica;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ForkJoinPool;
 
 public class FileScanner {
@@ -14,37 +16,38 @@ public class FileScanner {
     public static void main(String[] args) {
       //
 
-        int llarg=readFile(args[0]).length;
-        if(llarg<=FILE_MAX_SIZE) {
-            ForkJoinPool pool = new ForkJoinPool();
-            long t1=System.currentTimeMillis();
-            ArrayByteSearcher abs = new ArrayByteSearcher(readFile(args[0]), readFile(args[1]), 0, llarg);
-            pool.invoke(abs);
-            long t2=System.currentTimeMillis();
-            if (abs.getArray().length > 0) {
+        if(readFile(args[0]).length<=FILE_MAX_SIZE) {
 
-                Arrays.sort(abs.getArray());
-                System.out.println(Arrays.toString(abs.getArray()));
-                System.out.println(abs.getArray().length);
+            ForkJoinPool pool = new ForkJoinPool();
+            long temp1=System.currentTimeMillis();
+            ArrayByteSearcher abs = new ArrayByteSearcher(readFile(args[0]), readFile(args[1]));
+            long temp2=System.currentTimeMillis();
+
+            ArrayList<Long> al=pool.invoke(abs);
+            if (al.size() > 0) {
+
+                Collections.sort(al);
+
+                long[] ala = new long[al.size()];
+                for(int i=0; i<al.size();i++){
+                    ala[i]=al.get(i);
+                }
+                System.out.println(Arrays.toString(ala));
                 if(args.length==3) {
                     System.out.print("Temps d'execució: ");
-                    System.out.println((((t2 - t1)/1000)+","+(t2 - t1)%1000)+" Segons");
+                    System.out.println((((temp2 - temp1)/1000)+","+(temp2 - temp1)%1000)+" Segons");
                 }
             } else {
                 if(args.length==3) {
                     System.out.print("Temps d'execució: ");
-                    System.out.println((((t2 - t1)/1000)+","+(t2 - t1)%1000)+" Segons");
+                    System.out.println((((temp2 - temp1)/1000)+","+(temp2 - temp1)%1000)+" Segons");
                 }
                 System.out.println(0);
-                System.out.println(abs.getArray().length);
-
-
             }
         }
         else{
             System.out.println("El fitxer es massa granm");
         }
-
         }
     private static byte[] readFile(String path){
         File file = new File(path);
