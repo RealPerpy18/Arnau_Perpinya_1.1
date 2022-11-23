@@ -14,7 +14,7 @@ public class FileScanner {
 
 
     public static void main(String[] args) {
-      //
+
 
         if(readFile(args[0]).length<=FILE_MAX_SIZE) {
 
