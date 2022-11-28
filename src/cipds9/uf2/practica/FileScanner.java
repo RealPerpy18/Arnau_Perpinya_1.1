@@ -9,12 +9,8 @@ import java.util.Collections;
 import java.util.concurrent.ForkJoinPool;
 
 public class FileScanner {
-
     private static int FILE_MAX_SIZE=50000000;
-
-
     public static void main(String[] args) {
-      //
 
         if(readFile(args[0]).length<=FILE_MAX_SIZE) {
 
@@ -41,6 +37,7 @@ public class FileScanner {
                 if(args.length==3) {
                     System.out.print("Temps d'execució: ");
                     System.out.println((((temp2 - temp1)/1000)+","+(temp2 - temp1)%1000)+" Segons");
+
                 }
                 System.out.println(0);
             }
@@ -48,7 +45,13 @@ public class FileScanner {
         else{
             System.out.println("El fitxer es massa granm");
         }
-        }
+    }
+
+    /**
+     * Converteix un fitxer en array Byte[] a partir de la ruta del fitxer.
+     * @param path És la ruta del fitxer a llegir
+     * @return Array Byte[] del fitxer llegit
+     */
     private static byte[] readFile(String path){
         File file = new File(path);
         try {
